@@ -6,4 +6,9 @@
     <ClInclude Include="StringReferenceWrapper.h" />
     <ClInclude Include="ToastEventHandler.h" />
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="ToastEventHandler.cpp" />
+    <ClCompile Include="stdafx.cpp" />
+    <ClCompile Include="StringReferenceWrapper.cpp" />
+  </ItemGroup>
 </Project>

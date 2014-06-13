@@ -11,11 +11,3 @@ public:
 private:
 
 };
-
-DesktopToastsApp::DesktopToastsApp()
-{
-}
-
-DesktopToastsApp::~DesktopToastsApp()
-{
-}
