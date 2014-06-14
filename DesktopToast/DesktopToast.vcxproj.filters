@@ -10,5 +10,6 @@
     <ClCompile Include="ToastEventHandler.cpp" />
     <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="StringReferenceWrapper.cpp" />
+    <ClCompile Include="DesktopToastsSample.cpp" />
   </ItemGroup>
 </Project>

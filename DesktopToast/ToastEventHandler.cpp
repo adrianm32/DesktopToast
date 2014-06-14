@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "ToastEventHandler.h"
 
 using namespace ABI::Windows::UI::Notifications;  //this way dont have to keep using FQN everytime
 
