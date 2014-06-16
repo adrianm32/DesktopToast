@@ -13,8 +13,11 @@ Since C++ has overloading of function names and C does not, the C++ compiler can
 as the extern extends the visibility to the whole program, by externing a variable we can use the variables anywhere in the program provided we know the declaration of them and the variable is defined somewhere.
 extern only declares , it does not allocate memory. The variable must be defined somewhere in order to allocate memory and for it to be used.
 */
-EXTERN_C IMAGE_DOS_HEADER __imageBase;
-#define HINST_THISCOMPONENT ((HINSTANCE)&__imageBase)
+EXTERN_C IMAGE_DOS_HEADER __ImageBase;
+#define HINST_THISCOMPONENT ((HINSTANCE)&__ImageBase)
+/*
+The pseudovariable __ImageBase represents the DOS header of the module, which happens to be what a Win32 module begins with. In other words, it's the base address of the module. And the module base address is the same as its HINSTANCE.
+*/
 #endif
 
 #ifndef ARRAY_SIZE
