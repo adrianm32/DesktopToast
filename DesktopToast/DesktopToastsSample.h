@@ -29,6 +29,8 @@ The pseudovariable __ImageBase represents the DOS header of the module, which ha
 #define HM_TEXTBUTTON 1
 #endif
 
+const wchar_t AppId []  = L"Microsoft.Samples.DesktopToasts";
+
 class DesktopToastsApp
 {
 public:

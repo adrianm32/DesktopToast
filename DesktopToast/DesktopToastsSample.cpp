@@ -148,16 +148,68 @@ void DesktopToastsApp::RunMessageLoop()
 	}
 }
 
+
+// In order to display toasts, a desktop application must have a shortcut on the Start menu.
+// Also, an AppUserModelID must be set on that shortcut.
+// The shortcut should be created as part of the installer. The following code shows how to create
+// a shortcut and assign an AppUserModelID using Windows APIs. You must download and include the 
+// Windows API Code Pack for Microsoft .NET Framework for this code to function
 HRESULT DesktopToastsApp::TryCreateShortcut()
 {
+	HRESULT hr = S_OK;
 
-	return S_OK;
+	wchar_t shortcutPath[MAX_PATH];
+	DWORD charWritten;
+	DWORD attributes;
+	bool fileExists;
+
+	charWritten = GetEnvironmentVariableW(L"APPDATA", shortcutPath, MAX_PATH);
+	IFC(charWritten > 0 ? S_OK : E_INVALIDARG);
+	IFC(StringCchCatW(shortcutPath, ARRAY_SIZE(shortcutPath), L"\\Microsoft\\Windows\\Start Menu\\Programs\\Desktop Toasts App 1.lnk"));
+
+	attributes = GetFileAttributes(shortcutPath);
+	fileExists = attributes < INVALID_FILE_ATTRIBUTES;
+
+	if (!fileExists)
+	{
+		IFC(InstallShortcut(shortcutPath));
+	}
+
+Cleanup:
+	return hr;
 }
 
 HRESULT DesktopToastsApp::InstallShortcut(_In_ wchar_t * shortcutPath)
 {
+	HRESULT hr = S_OK;
 
-	return S_OK;
+	wchar_t exePath[MAX_PATH];
+	DWORD charWritten;
+	ComPtr<IShellLink> shellLink;  //shObjIdl.h  shell object api
+	ComPtr<IPropertyStore> propertyStore;
+	PROPVARIANT appIdPropVar;
+	ComPtr<IPersistFile> persistFile;
+ 
+	charWritten = GetModuleFileNameEx(GetCurrentProcess(), nullptr, exePath, ARRAYSIZE(exePath));
+	IFC(charWritten > 0 ? S_OK : E_FAIL);
+
+	IFC(CoCreateInstance(CLSID_ShellLink, nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&shellLink)));
+	//IFC(CoCreateInstance(CLSID_ShellLink, nullptr, CLSCTX_INPROC_SERVER, __uuidof(shellLink.Get()),  &shellLink));
+
+	IFC(shellLink->SetPath(exePath));
+	IFC(shellLink->SetArguments(L""));
+
+	IFC(shellLink.As(&propertyStore));
+	IFC(InitPropVariantFromString(AppId, &appIdPropVar));
+	IFC(propertyStore->SetValue(PKEY_AppUserModel_ID, appIdPropVar));
+	IFC(propertyStore->Commit());
+
+	IFC(shellLink.As(&persistFile));
+	IFC(persistFile->Save(shortcutPath, TRUE));
+
+Cleanup:
+	PropVariantClear(&appIdPropVar);
+	return hr;
 }
 
 /*
@@ -284,7 +336,29 @@ HRESULT DesktopToastsApp::CreateToast(
 	_In_ ABI::Windows::Data::Xml::Dom::IXmlDocument *xml
 	)
 {
-	return S_OK;
+	HRESULT hr = S_OK;
+
+	ComPtr<IToastNotifier> notifier;
+	ComPtr<IToastNotificationFactory> factory;
+	ComPtr<IToastNotification> toast;
+	EventRegistrationToken activatedToken, dismissedToken, failedToken;
+	ComPtr<ToastEventHandler> eventHandler;
+
+	IFC(toastManager->CreateToastNotifierWithId(StringReferenceWrapper(AppId).Get(), notifier.ReleaseAndGetAddressOf()));
+	IFC(GetActivationFactory(StringReferenceWrapper(RuntimeClass_Windows_UI_Notifications_ToastNotification).Get(), factory.ReleaseAndGetAddressOf()));
+	IFC(factory->CreateToastNotification(xml, toast.ReleaseAndGetAddressOf()));
+	
+	//Register the event handlers
+	eventHandler = new ToastEventHandler(_hWnd, _hEdit);
+	IFC(toast->add_Activated(eventHandler.Get(), &activatedToken));
+	IFC(toast->add_Dismissed(eventHandler.Get(), &dismissedToken));
+	IFC(toast->add_Failed(eventHandler.Get(), &failedToken));
+
+	IFC(notifier->Show(toast.Get()));
+
+
+Cleanup:
+	return hr;
 }
 
 HRESULT DesktopToastsApp::SetImageSrc(
@@ -319,7 +393,27 @@ HRESULT DesktopToastsApp::SetTextValues(
 	_In_ ABI::Windows::Data::Xml::Dom::IXmlDocument * toastXml
 	)
 {
-	return S_OK;
+	HRESULT hr = S_OK;
+
+	ComPtr<IXmlNodeList> nodeList;
+	ComPtr<IXmlNode> textNode;
+	UINT32 nodeListLength;
+
+	IFC((textValues != nullptr && textValuesCount > 0) ? S_OK : E_INVALIDARG);
+
+	IFC(toastXml->GetElementsByTagName(StringReferenceWrapper(L"text").Get(), nodeList.ReleaseAndGetAddressOf()));
+
+	IFC(nodeList->get_Length(&nodeListLength));
+	IFC((textValuesCount <= nodeListLength) ? S_OK : E_INVALIDARG);
+
+	for (UINT32 i = 0; i < textValuesCount; ++i)
+	{
+		IFC(nodeList->Item(i, textNode.ReleaseAndGetAddressOf()));
+		IFC(SetNodeValueString(StringReferenceWrapper(textValues[i], textValuesLengths[i]).Get(), textNode.Get(), toastXml));
+	}
+
+Cleanup:
+	return hr;
 }
 
 HRESULT DesktopToastsApp::SetNodeValueString(
@@ -328,5 +422,17 @@ HRESULT DesktopToastsApp::SetNodeValueString(
 	_In_ ABI::Windows::Data::Xml::Dom::IXmlDocument * xml
 	)
 {
-	return S_OK;
+	HRESULT hr = S_OK;
+
+	ComPtr<IXmlText> inputText;
+	ComPtr<IXmlNode> inputTextNode;
+	ComPtr<IXmlNode> appendedNode;
+
+	IFC(xml->CreateTextNode(outputString, inputText.ReleaseAndGetAddressOf()));
+	IFC(inputText.As(&inputTextNode));
+
+	IFC(node->AppendChild(inputTextNode.Get(), appendedNode.ReleaseAndGetAddressOf()));
+
+Cleanup:
+	return hr;
 }
