@@ -24,3 +24,9 @@
 #include "DesktopToastsSample.h"
 #include "StringReferenceWrapper.h"
 #include "ToastEventHandler.h"
+
+#define IFC(x)    {hr = (x); if (FAILED(hr)){ goto Cleanup;}}
+#define IFCOOM(x) if ((x) == NULL) {hr = E_OUTOFMEMORY; goto Cleanup;}
+#define IFCPTR(x) if ((x) == NULL) {hr = E_POINTER; goto Cleanup;}
+#define IFCW32(x) {hr = HRESULT_FROM_WIN32(x); if (FAILED(hr)){ goto Cleanup;}}
+#define IFCEXPECT(x)  if (!(x)) {hr = E_UNEXPECTED; goto Cleanup;}

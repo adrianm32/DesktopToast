@@ -261,7 +261,7 @@ HRESULT DesktopToastsApp::CreateToastXml(
 	wchar_t * imagePath;
 	wchar_t * textValues[] = {  //String constants are not allocated on the "heap" - where the memory that you need to free() is allocated. They are allocated in another special segment, and there's no way to actually "free" this memory - i.e. make it useful for something else in the program.
 		L"Line 1",
-		L"Line 2",  //L is not a macro, it's just the standard prefix for wide (wchar_t, "Unicode") string literals; the concept is similar to the L suffix for long int literals, f suffix for float literals and so on1.
+		L"Line 2",
 		L"Line 3"
 	};
 
@@ -289,27 +289,10 @@ HRESULT DesktopToastsApp::CreateToast(
 
 HRESULT DesktopToastsApp::SetImageSrc(
 	_In_z_ wchar_t * imagePath,   //_z_ null terminated parameter
-	_In_ ABI::Windows::Data::Xml::Dom::IXmlDocument *toastXml
+	_In_ ABI::Windows::Data::Xml::Dom::IXmlDocument *xml
 	)
 {
-	HRESULT hr = S_OK;
-
-	wchar_t imageSrc[MAX_PATH] = L"file:///";
-	ComPtr<IXmlNodeList> nodeList;
-	ComPtr<IXmlNode> imageNode;
-	ComPtr<IXmlNamedNodeMap> attributes;
-	ComPtr<IXmlNode> srcAttribute;
-
-	IFC(StringCchCatW(imageSrc, ARRAY_SIZE(imageSrc), imagePath));  //strsafe.h functions.
-	IFC(toastXml->GetElementsByTagName(StringReferenceWrapper(L"image").Get(), nodeList.ReleaseAndGetAddressOf()));
-	IFC(nodeList->Item(0, imageNode.ReleaseAndGetAddressOf()));
-	IFC(imageNode->get_Attributes(attributes.ReleaseAndGetAddressOf()));
-	IFC(attributes->GetNamedItem(StringReferenceWrapper(L"src").Get(), srcAttribute.ReleaseAndGetAddressOf()));
-	
-	IFC(SetNodeValueString(StringReferenceWrapper(imageSrc).Get(), srcAttribute.Get(), toastXml));
-
-Cleanup:
-	return hr;
+	return S_OK;
 }
 
 HRESULT DesktopToastsApp::SetTextValues(

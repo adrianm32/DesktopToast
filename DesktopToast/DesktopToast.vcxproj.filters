@@ -12,4 +12,7 @@
     <ClCompile Include="StringReferenceWrapper.cpp" />
     <ClCompile Include="DesktopToastsSample.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="toastImageAndText.png" />
+  </ItemGroup>
 </Project>

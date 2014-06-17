@@ -97,6 +97,9 @@
     <ClCompile Include="StringReferenceWrapper.cpp" />
     <ClCompile Include="ToastEventHandler.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="toastImageAndText.png" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

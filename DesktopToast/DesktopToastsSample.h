@@ -3,6 +3,7 @@
 #define LINE_LENGTH 15 //How many characters we'll allot for each line of a toast
 
 using namespace ABI::Windows::UI::Notifications;
+using namespace ABI::Windows::Data::Xml::Dom;
 
 #ifndef HINST_THISCOMPONENT
 /*
@@ -51,23 +52,23 @@ private:
 	HRESULT DisplayToast();
 	HRESULT CreateToastXml(
 		_In_ IToastNotificationManagerStatics * toastManager,
-		_Outptr_ IXMLDocument **xml
+		_Outptr_ IXmlDocument **xml
 		);
 	HRESULT CreateToast(
 		_In_ IToastNotificationManagerStatics * toastManager,
-		_In_ IXMLDocument *xml
+		_In_ IXmlDocument *xml
 		);
 
 	HRESULT SetImageSrc(
 		_In_z_ wchar_t * imagePath,   //_z_ null terminated parameter
-		_In_ IXMLDocument *xml
+		_In_ IXmlDocument *xml
 		);
 
 	HRESULT SetTextValues(
 		_In_reads_(textValuesCount) wchar_t ** textValues,   //2 dimensional array of strings
 		_In_ UINT32 textValuesCount,
 		_In_reads_(textValuesCount) UINT32 *textValuesLengths, // 1 dimensional array of string lengths
-		_In_ IXMLDocument * toastXml
+		_In_ IXmlDocument * toastXml
 		);
 
 	HRESULT SetNodeValueString(
