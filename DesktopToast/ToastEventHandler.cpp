@@ -24,7 +24,6 @@ IFACEMETHODIMP ToastEventHandler::Invoke(_In_ ABI::Windows::UI::Notifications::I
 	return succeeded ? S_OK : E_FAIL;
 }
 
-
 // DesktopToastDismissedEventHandler
 IFACEMETHODIMP ToastEventHandler::Invoke(_In_ ABI::Windows::UI::Notifications::IToastNotification *sender, _In_ ABI::Windows::UI::Notifications::IToastDismissedEventArgs *e)
 {

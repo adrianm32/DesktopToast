@@ -193,8 +193,8 @@ HRESULT DesktopToastsApp::InstallShortcut(_In_ wchar_t * shortcutPath)
 	charWritten = GetModuleFileNameEx(GetCurrentProcess(), nullptr, exePath, ARRAYSIZE(exePath));
 	IFC(charWritten > 0 ? S_OK : E_FAIL);
 
-	IFC(CoCreateInstance(CLSID_ShellLink, nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&shellLink)));
-	//IFC(CoCreateInstance(CLSID_ShellLink, nullptr, CLSCTX_INPROC_SERVER, __uuidof(shellLink.Get()),  &shellLink));
+	//IFC(CoCreateInstance(CLSID_ShellLink, nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&shellLink)));
+	IFC(CoCreateInstance(CLSID_ShellLink, nullptr, CLSCTX_INPROC_SERVER, __uuidof(shellLink.Get()),  &shellLink));
 
 	IFC(shellLink->SetPath(exePath));
 	IFC(shellLink->SetArguments(L""));
